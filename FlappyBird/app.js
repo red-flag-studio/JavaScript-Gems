@@ -7,7 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let birdLeft = 220,
     birdBottom = 100,
     gravity = 2,
-    isGameOver = false;
+    isGameOver = false,
+    gap = 420;
 
   function startGame() {
     if (birdBottom > 0) birdBottom -= gravity;
@@ -37,27 +38,42 @@ document.addEventListener("DOMContentLoaded", () => {
     let randomHeight = Math.random() * 60;
     let obstacleBottom = randomHeight;
     const obstacle = document.createElement("div");
-    if (!isGameOver) obstacle.classList.add("obstacle");
+    const topObstacle = document.createElement("div");
+    if (!isGameOver) {
+      obstacle.classList.add("obstacle");
+      topObstacle.classList.add("top-obstacle");
+    }
+
     obstacle.style.left = obstacleLeft + "px";
     obstacle.style.bottom = obstacleBottom + "px";
+
+    topObstacle.style.left = obstacleLeft + "px";
+    topObstacle.style.bottom = obstacleBottom + gap + "px";
+
     gameDisplay.appendChild(obstacle);
+    gameDisplay.appendChild(topObstacle);
 
     function moveObstacleLeft() {
-      obstacleLeft -= 2;
-      obstacle.style.left = obstacleLeft + "px";
-      if (obstacleLeft === -60) {
-        clearInterval(timerId);
-        gameDisplay.removeChild(obstacle);
-      }
-      if (
-        (obstacleLeft > 200 &&
-          obstacleLeft < 280 &&
-          birdLeft === 220 &&
-          birdBottom  < 150 + obstacleBottom) ||
-        birdBottom === 0
-      ) {
-        clearInterval(timerId);
-        gameOver();
+      if (!isGameOver) {
+        obstacleLeft -= 2;
+        obstacle.style.left = obstacleLeft + "px";
+        topObstacle.style.left = obstacleLeft + "px";
+        if (obstacleLeft === -60) {
+          clearInterval(timerId);
+          gameDisplay.removeChild(obstacle);
+          gameDisplay.removeChild(topObstacle);
+        }
+        if (
+          (obstacleLeft > 200 &&
+            obstacleLeft < 280 &&
+            birdLeft === 220 &&
+            (birdBottom < 150 + obstacleBottom ||
+              birdBottom > gap - 200 + obstacleBottom)) ||
+          birdBottom === 0
+        ) {
+          clearInterval(timerId);
+          gameOver();
+        }
       }
     }
     let timerId = setInterval(moveObstacleLeft, 20);
